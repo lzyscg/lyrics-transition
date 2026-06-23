@@ -121,6 +121,15 @@ def build_options(converter_id: str) -> dict:
             )
             reverse_labels = {label: value for value, label in labels.items()}
             options[option.key] = reverse_labels.get(selected_label, selected_label)
+        elif option.kind == "number":
+            options[option.key] = st.number_input(
+                option.label,
+                min_value=1,
+                max_value=64,
+                value=int(option.default or 12),
+                step=1,
+                help=option.help or None,
+            )
     return options
 
 

@@ -37,6 +37,23 @@ The Minnan converter lives in `lyrics_converter/converters/minnan.py` and uses `
 
 Song-specific corrections should be handled with custom dictionaries first. If a correction becomes broadly useful, promote it into the converter or a shared dictionary file.
 
+## Homophone Replacement
+
+The homophone converter is implemented in Python under:
+
+```text
+lyrics_converter/converters/homophone.py
+lyrics_converter/homophone/
+```
+
+It follows the earlier standalone project's logic, but does not depend on that project or its Node/Vite code:
+
+1. Get one pinyin key per Chinese character.
+2. Generate candidate characters from common characters, manual candidates, and `pypinyin`'s dictionary.
+3. Filter candidates by tone, polyphony, blocked characters, and stroke count.
+4. Rank by manual priority, commonness, simplicity, and recent repetition.
+5. Preserve all non-Chinese characters, whitespace, punctuation, and line breaks.
+
 ## Shared Utilities
 
 Common line/token handling is in:

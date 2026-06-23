@@ -8,6 +8,7 @@ Implemented modes:
 - `cantonese`: Cantonese lyrics to Jyutping with tone numbers.
 - `english`: English lyrics to readable phonetic respelling.
 - `minnan`: Taiwanese Hokkien lyrics to Tailo romanization.
+- `homophone`: Chinese lyrics to same-sound Chinese-character replacements.
 
 The Minnan/Tailo mode uses `taibun` as the first-pass conversion engine. Use a custom dictionary for song-specific corrections.
 
@@ -24,6 +25,7 @@ python3 convert.py --mode mandarin "test_data/original_examples/国语转拼音/
 python3 convert.py --mode cantonese "test_data/original_examples/粤语转拼音/原歌词.txt" output.txt
 python3 convert.py --mode english "test_data/original_examples/英语音译改写/原歌词.txt" output.txt
 python3 convert.py --mode minnan "test_data/original_examples/闽南语转台罗拼音/原歌词.txt" output.txt
+python3 convert.py --mode homophone "test_data/original_examples/谐音字替换/原歌词.txt" output.txt
 ```
 
 List available converters:
@@ -54,6 +56,11 @@ lyrics_converter/
     cantonese.py
     english.py
     minnan.py
+    homophone.py
+  homophone/
+    engine.py
+    data.py
+    types.py
 convert.py
 app.py
 test_data/
@@ -90,4 +97,11 @@ For English:
   "through": "throo",
   "baby": "bay-bee"
 }
+```
+
+Homophone replacement options:
+
+```bash
+python3 convert.py --mode homophone --homophone-ignore-tone input.txt output.txt
+python3 convert.py --mode homophone --homophone-max-strokes 14 input.txt output.txt
 ```

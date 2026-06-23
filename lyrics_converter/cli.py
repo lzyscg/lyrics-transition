@@ -36,6 +36,27 @@ def build_parser() -> argparse.ArgumentParser:
         help="Tailo dialect preference for minnan mode",
     )
     parser.add_argument(
+        "--homophone-ignore-tone",
+        action="store_true",
+        help="allow same pinyin with different tone in homophone mode",
+    )
+    parser.add_argument(
+        "--homophone-allow-polyphonic",
+        action="store_true",
+        help="allow polyphonic candidate characters in homophone mode",
+    )
+    parser.add_argument(
+        "--homophone-allow-complex",
+        action="store_true",
+        help="allow complex or unknown-stroke candidate characters in homophone mode",
+    )
+    parser.add_argument(
+        "--homophone-max-strokes",
+        type=int,
+        default=12,
+        help="maximum stroke count for homophone candidates",
+    )
+    parser.add_argument(
         "--list-modes",
         action="store_true",
         help="show available conversion modes and exit",
@@ -67,11 +88,15 @@ def main(argv: list[str] | None = None) -> int:
         "add_sections": not args.no_english_sections,
         "tailo_format": args.tailo_format,
         "tailo_dialect": args.tailo_dialect,
+        "homophone_strict_tone": not args.homophone_ignore_tone,
+        "homophone_avoid_polyphonic": not args.homophone_allow_polyphonic,
+        "homophone_avoid_complex": not args.homophone_allow_complex,
+        "homophone_max_strokes": args.homophone_max_strokes,
     }
     converted = convert_text(args.mode, text, custom_dict=custom, options=options)
 
     if args.output:
-        Path(args.output).write_text(converted + ("\n" if text.endswith("\n") else ""), encoding="utf-8")
+        Path(args.output).write_text(converted, encoding="utf-8")
     else:
         print(converted)
     return 0

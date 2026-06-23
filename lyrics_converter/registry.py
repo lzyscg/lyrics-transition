@@ -3,6 +3,7 @@ from __future__ import annotations
 from lyrics_converter.converters.base import LyricsConverter
 from lyrics_converter.converters.cantonese import CantoneseJyutpingConverter
 from lyrics_converter.converters.english import EnglishPhoneticConverter
+from lyrics_converter.converters.homophone import HomophoneReplaceConverter
 from lyrics_converter.converters.mandarin import MandarinPinyinConverter
 from lyrics_converter.converters.minnan import MinnanTailoConverter
 
@@ -14,6 +15,7 @@ _CONVERTERS: dict[str, LyricsConverter] = {
         CantoneseJyutpingConverter(),
         EnglishPhoneticConverter(),
         MinnanTailoConverter(),
+        HomophoneReplaceConverter(),
     )
 }
 
