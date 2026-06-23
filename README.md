@@ -44,6 +44,24 @@ streamlit run app.py
 
 The app supports lyric text upload, direct paste input, converter selection, optional custom JSON dictionaries, side-by-side preview, and result download.
 
+## Windows Portable Package
+
+For production users on Windows, build the portable package with GitHub Actions:
+
+1. Open the GitHub repository.
+2. Go to `Actions`.
+3. Run `Build Windows Portable Package`.
+4. Download the artifact `LyricsConverter-Windows-Portable`.
+5. Send the zip file to production users.
+
+Production users only need to unzip it and double-click:
+
+```text
+启动歌词转换工具.bat
+```
+
+No Python installation is required. See `docs/WINDOWS_PACKAGING.md` for details.
+
 ## Project Structure
 
 ```text
