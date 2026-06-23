@@ -1,0 +1,91 @@
+name: Build Windows Portable Package
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build-windows-portable:
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up build Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Prepare package directories
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path build\LyricsConverter | Out-Null
+          New-Item -ItemType Directory -Force -Path build\LyricsConverter\python | Out-Null
+
+      - name: Download Windows embeddable Python
+        shell: pwsh
+        run: |
+          $version = python -c "import sys; print('.'.join(map(str, sys.version_info[:3])))"
+          $url = "https://www.python.org/ftp/python/$version/python-$version-embed-amd64.zip"
+          Write-Host "Downloading $url"
+          Invoke-WebRequest -Uri $url -OutFile python-embed.zip
+          Expand-Archive python-embed.zip -DestinationPath build\LyricsConverter\python
+
+      - name: Enable site-packages in embedded Python
+        shell: pwsh
+        run: |
+          $pth = Get-ChildItem build\LyricsConverter\python -Filter "python*._pth" | Select-Object -First 1
+          $content = Get-Content $pth.FullName
+          $updated = @()
+          foreach ($line in $content) {
+            if ($line -eq "#import site") {
+              $updated += "Lib\site-packages"
+              $updated += "import site"
+            } else {
+              $updated += $line
+            }
+          }
+          Set-Content -Path $pth.FullName -Value $updated -Encoding ASCII
+
+      - name: Install pip and dependencies into embedded Python
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri https://bootstrap.pypa.io/get-pip.py -OutFile get-pip.py
+          build\LyricsConverter\python\python.exe get-pip.py
+          build\LyricsConverter\python\python.exe -m pip install --no-warn-script-location -r requirements.txt
+
+      - name: Copy application files
+        shell: pwsh
+        run: |
+          Copy-Item app.py build\LyricsConverter\
+          Copy-Item convert.py build\LyricsConverter\
+          Copy-Item requirements.txt build\LyricsConverter\
+          Copy-Item README.md build\LyricsConverter\
+          Copy-Item ARCHITECTURE.md build\LyricsConverter\
+          Copy-Item lyrics_converter build\LyricsConverter\lyrics_converter -Recurse
+          Copy-Item test_data build\LyricsConverter\test_data -Recurse
+          Copy-Item packaging\windows\启动歌词转换工具.bat build\LyricsConverter\
+          Copy-Item packaging\windows\使用说明.txt build\LyricsConverter\
+
+      - name: Smoke test portable package
+        shell: pwsh
+        working-directory: build\LyricsConverter
+        run: |
+          .\python\python.exe convert.py --list-modes
+          .\python\python.exe convert.py --mode homophone "test_data\original_examples\谐音字替换\原歌词.txt" "$env:RUNNER_TEMP\homophone.txt"
+          Get-Content "$env:RUNNER_TEMP\homophone.txt"
+
+      - name: Compress package
+        shell: pwsh
+        run: |
+          Compress-Archive -Path build\LyricsConverter\* -DestinationPath LyricsConverter-Windows-Portable.zip -Force
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LyricsConverter-Windows-Portable
+          path: LyricsConverter-Windows-Portable.zip
+          if-no-files-found: error
