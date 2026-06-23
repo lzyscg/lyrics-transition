@@ -62,6 +62,16 @@ Production users only need to unzip it and double-click:
 
 No Python installation is required. See `docs/WINDOWS_PACKAGING.md` for details.
 
+## macOS Launcher
+
+For macOS users, double-click:
+
+```text
+packaging/macos/启动歌词转换工具.command
+```
+
+The first launch creates a local `.venv` and installs dependencies. macOS needs `python3` installed.
+
 ## Project Structure
 
 ```text
