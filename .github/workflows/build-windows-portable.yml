@@ -42,6 +42,7 @@ jobs:
           $updated = @()
           foreach ($line in $content) {
             if ($line -eq "#import site") {
+              $updated += ".."
               $updated += "Lib\site-packages"
               $updated += "import site"
             } else {
