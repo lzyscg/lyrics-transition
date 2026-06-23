@@ -9,6 +9,7 @@ import webbrowser
 from pathlib import Path
 
 from streamlit.web import bootstrap
+from streamlit.web.bootstrap import load_config_options
 
 
 def resource_root() -> Path:
@@ -40,19 +41,20 @@ def main() -> int:
 
     app_path = root / "app.py"
     port = find_port()
+    flag_options = {
+        "global.developmentMode": False,
+        "server.address": "127.0.0.1",
+        "server.port": port,
+        "server.headless": True,
+        "browser.serverAddress": "localhost",
+        "browser.serverPort": port,
+        "browser.gatherUsageStats": False,
+    }
+    load_config_options(flag_options)
+
     threading.Thread(target=open_browser, args=(port,), daemon=True).start()
 
-    bootstrap.run(
-        str(app_path),
-        False,
-        [],
-        {
-            "server.address": "127.0.0.1",
-            "server.port": port,
-            "server.headless": True,
-            "browser.gatherUsageStats": False,
-        },
-    )
+    bootstrap.run(str(app_path), False, [], flag_options)
     return 0
 
 
