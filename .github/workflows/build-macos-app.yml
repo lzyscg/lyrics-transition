@@ -1,0 +1,65 @@
+name: Build macOS App Package
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build-macos-app:
+    runs-on: macos-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+          python -m pip install pyinstaller
+
+      - name: Build app with PyInstaller
+        run: |
+          pyinstaller \
+            --noconfirm \
+            --clean \
+            --windowed \
+            --name "歌词转换工具" \
+            --collect-all streamlit \
+            --collect-all pypinyin \
+            --collect-all pycantonese \
+            --collect-all opencc \
+            --collect-all pronouncing \
+            --collect-all cmudict \
+            --collect-all taibun \
+            --add-data "app.py:." \
+            --add-data "lyrics_converter:lyrics_converter" \
+            --add-data "test_data:test_data" \
+            packaging/macos/macos_app_launcher.py
+
+      - name: Prepare distribution folder
+        run: |
+          mkdir -p build/LyricsConverter-macOS
+          cp -R "dist/歌词转换工具.app" build/LyricsConverter-macOS/
+          cp "packaging/macos/使用说明-APP版.txt" build/LyricsConverter-macOS/
+          ditto -c -k --sequesterRsrc --keepParent build/LyricsConverter-macOS LyricsConverter-macOS-App.zip
+
+      - name: Smoke test CLI before upload
+        run: |
+          python convert.py --list-modes
+          python convert.py --mode homophone "test_data/original_examples/谐音字替换/原歌词.txt" "$RUNNER_TEMP/homophone.txt"
+          cat "$RUNNER_TEMP/homophone.txt"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LyricsConverter-macOS-App
+          path: LyricsConverter-macOS-App.zip
+          if-no-files-found: error

@@ -72,6 +72,23 @@ packaging/macos/启动歌词转换工具.command
 
 The first launch creates a local `.venv` and installs dependencies. macOS needs `python3` installed.
 
+## macOS App Package
+
+For macOS users who should not install Python, build the app package with GitHub Actions:
+
+1. Open the GitHub repository.
+2. Go to `Actions`.
+3. Run `Build macOS App Package`.
+4. Download `LyricsConverter-macOS-App`.
+
+The downloaded zip contains:
+
+```text
+歌词转换工具.app
+```
+
+Users can double-click the app directly. See `docs/MACOS_PACKAGING.md` for details.
+
 ## Project Structure
 
 ```text
