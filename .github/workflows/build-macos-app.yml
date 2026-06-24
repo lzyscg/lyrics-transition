@@ -46,10 +46,10 @@ jobs:
 
       - name: Prepare distribution folder
         run: |
-          mkdir -p build/LyricsConverter-macOS
-          cp -R "dist/歌词转换工具.app" build/LyricsConverter-macOS/
-          cp "packaging/macos/使用说明-APP版.txt" build/LyricsConverter-macOS/
-          ditto -c -k --sequesterRsrc --keepParent build/LyricsConverter-macOS LyricsConverter-macOS-Intel.zip
+          mkdir -p build/LyricsConverter-macOS-Intel
+          cp -R "dist/歌词转换工具.app" build/LyricsConverter-macOS-Intel/
+          cp "packaging/macos/使用说明-APP版.txt" build/LyricsConverter-macOS-Intel/
+          ditto -c -k --sequesterRsrc --keepParent build/LyricsConverter-macOS-Intel LyricsConverter-macOS-Intel.zip
 
       - name: Smoke test CLI before upload
         run: |
