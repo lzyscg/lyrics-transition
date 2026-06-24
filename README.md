@@ -44,6 +44,16 @@ streamlit run app.py
 
 The app supports lyric text upload, direct paste input, converter selection, optional custom JSON dictionaries, side-by-side preview, and result download.
 
+## Online Deployment
+
+GitHub Pages can host the static entry page, but it cannot run the Python Streamlit app directly. The recommended short-term online setup is:
+
+1. Deploy `app.py` to Streamlit Community Cloud.
+2. Enable GitHub Pages from the `docs/` directory workflow.
+3. Send production users the GitHub Pages entry URL.
+
+See `docs/ONLINE_DEPLOYMENT.md` for the deployment steps.
+
 ## Windows Portable Package
 
 For production users on Windows, build the portable package with GitHub Actions:

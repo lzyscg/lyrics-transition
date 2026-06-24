@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>歌词转换工作台</title>
+    <style>
+      :root {
+        --bg: #f7f8fb;
+        --panel: #ffffff;
+        --ink: #172033;
+        --muted: #647084;
+        --line: #dce3ee;
+        --blue: #2563eb;
+        --teal: #0f9f8f;
+        --rose: #d14b72;
+        --shadow: 0 18px 60px rgba(23, 32, 51, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.68), rgba(247, 248, 251, 0.96)),
+          var(--bg);
+        color: var(--ink);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei",
+          "PingFang SC", sans-serif;
+      }
+
+      main {
+        width: min(1080px, calc(100% - 40px));
+        margin: 0 auto;
+        padding: 56px 0 42px;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        margin-bottom: 42px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 17px;
+        font-weight: 700;
+      }
+
+      .mark {
+        display: grid;
+        width: 38px;
+        height: 38px;
+        place-items: center;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        box-shadow: 0 8px 24px rgba(23, 32, 51, 0.08);
+      }
+
+      .status {
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 0.92fr) minmax(360px, 1.08fr);
+        gap: 34px;
+        align-items: center;
+      }
+
+      h1 {
+        margin: 0 0 18px;
+        font-size: clamp(36px, 6vw, 66px);
+        line-height: 1.05;
+        letter-spacing: 0;
+      }
+
+      .lead {
+        margin: 0 0 28px;
+        color: var(--muted);
+        font-size: 18px;
+        line-height: 1.72;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 46px;
+        padding: 0 20px;
+        border: 1px solid transparent;
+        border-radius: 7px;
+        background: var(--blue);
+        color: white;
+        font-size: 15px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: transform 160ms ease, box-shadow 160ms ease;
+        box-shadow: 0 14px 28px rgba(37, 99, 235, 0.22);
+      }
+
+      .button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 18px 34px rgba(37, 99, 235, 0.27);
+      }
+
+      .secondary {
+        background: var(--panel);
+        border-color: var(--line);
+        color: var(--ink);
+        box-shadow: none;
+      }
+
+      .secondary:hover {
+        box-shadow: 0 12px 28px rgba(23, 32, 51, 0.08);
+      }
+
+      .note {
+        margin-top: 18px;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.7;
+      }
+
+      .app-preview {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+
+      .window-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        height: 44px;
+        padding: 0 16px;
+        border-bottom: 1px solid var(--line);
+        background: #f0f3f8;
+      }
+
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--rose);
+      }
+
+      .dot:nth-child(2) {
+        background: #e9a82f;
+      }
+
+      .dot:nth-child(3) {
+        background: var(--teal);
+      }
+
+      .preview-body {
+        display: grid;
+        grid-template-columns: 0.9fr 1.1fr;
+        gap: 0;
+        min-height: 360px;
+      }
+
+      .pane {
+        padding: 20px;
+      }
+
+      .pane + .pane {
+        border-left: 1px solid var(--line);
+      }
+
+      .label {
+        margin-bottom: 12px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .select {
+        height: 38px;
+        margin-bottom: 14px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: #fbfcfe;
+      }
+
+      .lyric-lines {
+        display: grid;
+        gap: 10px;
+      }
+
+      .line {
+        height: 13px;
+        border-radius: 3px;
+        background: #e8edf5;
+      }
+
+      .line:nth-child(2n) {
+        width: 82%;
+      }
+
+      .line:nth-child(3n) {
+        width: 68%;
+      }
+
+      .result {
+        background: #f7f9fc;
+      }
+
+      .result .line {
+        background: rgba(37, 99, 235, 0.16);
+      }
+
+      .features {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        margin-top: 34px;
+      }
+
+      .feature {
+        min-height: 92px;
+        padding: 16px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+      }
+
+      .feature strong {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 14px;
+      }
+
+      .feature span {
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.55;
+      }
+
+      @media (max-width: 860px) {
+        main {
+          width: min(100% - 28px, 680px);
+          padding-top: 28px;
+        }
+
+        .topbar,
+        .hero {
+          grid-template-columns: 1fr;
+        }
+
+        .hero {
+          display: block;
+        }
+
+        .app-preview {
+          margin-top: 30px;
+        }
+
+        .preview-body,
+        .features {
+          grid-template-columns: 1fr;
+        }
+
+        .pane + .pane {
+          border-left: 0;
+          border-top: 1px solid var(--line);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="topbar">
+        <div class="brand">
+          <div class="mark">♪</div>
+          <span>歌词转换工作台</span>
+        </div>
+        <div class="status">线上入口</div>
+      </div>
+
+      <section class="hero" aria-labelledby="title">
+        <div>
+          <h1 id="title">打开网页，直接转换歌词</h1>
+          <p class="lead">
+            面向生产人员使用的在线入口。无需安装 Python，无需区分 Windows 或 macOS，
+            打开工具后即可上传歌词、选择转换类型并下载结果。
+          </p>
+
+          <div class="actions">
+            <a class="button" id="open-app" href="https://lyrics-transition.streamlit.app/">进入转换工具</a>
+            <a class="button secondary" href="https://github.com/lzyscg/lyrics-transition/releases/tag/v0.1.0">下载备用离线包</a>
+          </div>
+
+          <p class="note">
+            如果按钮打开后提示应用不存在，说明 Streamlit Cloud 地址还没有创建或地址不同。
+            部署完成后，把本页中的工具地址改成实际地址即可。
+          </p>
+        </div>
+
+        <div class="app-preview" aria-hidden="true">
+          <div class="window-bar">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+          </div>
+          <div class="preview-body">
+            <div class="pane">
+              <div class="label">输入</div>
+              <div class="select"></div>
+              <div class="lyric-lines">
+                <div class="line"></div>
+                <div class="line"></div>
+                <div class="line"></div>
+                <div class="line"></div>
+                <div class="line"></div>
+                <div class="line"></div>
+                <div class="line"></div>
+              </div>
+            </div>
+            <div class="pane result">
+              <div class="label">输出</div>
+              <div class="lyric-lines">
+                <div class="line"></div>
+                <div class="line"></div>
+                <div class="line"></div>
+                <div class="line"></div>
+                <div class="line"></div>
+                <div class="line"></div>
+                <div class="line"></div>
+                <div class="line"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="features" aria-label="支持能力">
+        <div class="feature"><strong>国语拼音</strong><span>中文歌词转拼音，保留歌词行结构。</span></div>
+        <div class="feature"><strong>粤语拼音</strong><span>粤语歌词转 Jyutping，适合校对生产。</span></div>
+        <div class="feature"><strong>英语音译</strong><span>英文歌词转更易读的音译改写。</span></div>
+        <div class="feature"><strong>闽南语/谐音</strong><span>保留扩展模块，后续继续优化。</span></div>
+      </section>
+    </main>
+  </body>
+</html>
